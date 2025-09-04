@@ -1,9 +1,17 @@
 export default async (req, res) => {
        const { Redis } = await import('@upstash/redis');
 
+       const redisUrl = process.env.KV_REDIS_URL;
+       const redisToken = process.env.KV_REDIS_TOKEN || '';
+
+       if (!redisUrl) {
+         console.error('KV_REDIS_URL is missing');
+         return res.status(500).send('Redis configuration error: Missing URL');
+       }
+
        const redis = new Redis({
-         url: process.env.KV_REDIS_URL,
-         token: process.env.KV_REDIS_TOKEN || '' // Token may not be needed for some setups
+         url: redisUrl,
+         token: redisToken
        });
 
        const alias = req.url.replace('/api/redirect/', '');
