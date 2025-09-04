@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/:alias*\\.(ts|m3u)",
+      "destination": "/api/redirect/:alias*"
+    }
+  ]
+}
