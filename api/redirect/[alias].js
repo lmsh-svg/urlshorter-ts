@@ -1,8 +1,9 @@
 export default async (req, res) => {
-       const { createClient } = await import('@vercel/redis');
+       const { Redis } = await import('@upstash/redis');
 
-       const redis = createClient({
-         url: process.env.KV_REDIS_URL
+       const redis = new Redis({
+         url: process.env.KV_REDIS_URL,
+         token: process.env.KV_REDIS_TOKEN || '' // Token may not be needed for some setups
        });
 
        const alias = req.url.replace('/api/redirect/', '');
