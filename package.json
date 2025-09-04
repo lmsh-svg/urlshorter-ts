@@ -1,12 +1,12 @@
 {
-  "name": "simple-url-shortener",
-  "version": "1.0.0",
-  "private": true,
-  "dependencies": {
-    "@vercel/kv": "^2.0.0",
-    "nanoid": "^5.0.7"
-  },
-  "engines": {
-    "node": ">=18"
-  }
-}
+       "name": "simple-url-shortener",
+       "version": "1.0.0",
+       "private": true,
+       "dependencies": {
+         "@vercel/redis": "^0.2.0",
+         "nanoid": "^5.0.7"
+       },
+       "engines": {
+         "node": ">=18"
+       }
+     }
