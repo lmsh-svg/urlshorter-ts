@@ -1,9 +1,10 @@
 export default async (req, res) => {
-       const { createClient } = await import('@vercel/redis');
+       const { Redis } = await import('@upstash/redis');
        const { nanoid } = await import('nanoid');
 
-       const redis = createClient({
-         url: process.env.KV_REDIS_URL
+       const redis = new Redis({
+         url: process.env.KV_REDIS_URL,
+         token: process.env.KV_REDIS_TOKEN || '' // Token may not be needed for some setups
        });
 
        if (req.method !== 'POST') {
