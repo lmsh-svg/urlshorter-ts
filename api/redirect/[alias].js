@@ -1,6 +1,6 @@
-const kv = require('@vercel/kv');
+export default async (req, res) => {
+  const { kv } = await import('@vercel/kv');
 
-module.exports = async (req, res) => {
   // Extract alias from the original path (after rewrite)
   const alias = req.url.replace('/api/redirect/', '');
 
