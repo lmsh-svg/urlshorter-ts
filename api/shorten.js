@@ -1,7 +1,7 @@
-const kv = require('@vercel/kv');
-const { nanoid } = require('nanoid');
+export default async (req, res) => {
+  const { kv } = await import('@vercel/kv');
+  const { nanoid } = await import('nanoid');
 
-module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
