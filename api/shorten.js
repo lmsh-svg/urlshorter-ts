@@ -1,40 +1,44 @@
 export default async (req, res) => {
-  const { kv } = await import('@vercel/kv');
-  const { nanoid } = await import('nanoid');
+       const { createClient } = await import('@vercel/redis');
+       const { nanoid } = await import('nanoid');
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+       const redis = createClient({
+         url: process.env.KV_REDIS_URL
+       });
 
-  const { longUrl, extension } = req.body;
+       if (req.method !== 'POST') {
+         return res.status(405).json({ error: 'Method not allowed' });
+       }
 
-  if (!longUrl || !extension) {
-    return res.status(400).json({ error: 'Missing URL or extension' });
-  }
+       const { longUrl, extension } = req.body;
 
-  try {
-    new URL(longUrl);
-  } catch {
-    return res.status(400).json({ error: 'Invalid URL' });
-  }
+       if (!longUrl || !extension) {
+         return res.status(400).json({ error: 'Missing URL or extension' });
+       }
 
-  let attempts = 0;
-  const shortLength = 6;
+       try {
+         new URL(longUrl);
+       } catch {
+         return res.status(400).json({ error: 'Invalid URL' });
+       }
 
-  while (attempts < 10) {
-    const shortCode = nanoid(shortLength);
-    const alias = shortCode + extension;
+       let attempts = 0;
+       const shortLength = 6;
 
-    const existing = await kv.get(alias);
-    if (!existing) {
-      await kv.set(alias, { target: longUrl, visit_count: 0 });
-      const origin = req.headers['x-forwarded-proto'] + '://' + req.headers.host;
-      const shortUrl = `${origin}/${alias}`;
-      return res.status(200).json({ shortUrl });
-    }
+       while (attempts < 10) {
+         const shortCode = nanoid(shortLength);
+         const alias = shortCode + extension;
 
-    attempts++;
-  }
+         const existing = await redis.get(alias);
+         if (!existing) {
+           await redis.set(alias, JSON.stringify({ target: longUrl, visit_count: 0 }));
+           const origin = req.headers['x-forwarded-proto'] + '://' + req.headers.host;
+           const shortUrl = `${origin}/${alias}`;
+           return res.status(200).json({ shortUrl });
+         }
 
-  res.status(500).json({ error: 'Failed to generate unique short URL' });
-};
+         attempts++;
+       }
+
+       res.status(500).json({ error: 'Failed to generate unique short URL' });
+     };
